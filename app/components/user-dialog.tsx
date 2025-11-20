@@ -8,19 +8,20 @@ import MutableDialog, { ActionState }  from '@/components/mutable-dialog'
 
 export function UserDialog() {
   const handleAddUser = async (data: UserFormData): Promise<ActionState<User>> => {
-    try {
-      const newPerson = await addPerson(data)
+    const result = await addPerson(data)
+    
+    if (result.success && result.data) {
       // Reload page to show new person
       window.location.href = '/'
       return {
         success: true,
-        message: `Person ${newPerson.name} added successfully`,
-        data: newPerson
+        message: `Person ${result.data.name} added successfully`,
+        data: result.data
       }
-    } catch (error) {
+    } else {
       return {
         success: false,
-        message: 'Failed to add person: ' + (error instanceof Error ? error.message : 'Unknown error')
+        message: result.error || 'Failed to add person'
       }
     }
   }

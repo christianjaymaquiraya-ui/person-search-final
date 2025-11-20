@@ -37,42 +37,58 @@ export async function searchPerson(query: string): Promise<Person[]> {
   return results
 }
 
-export async function addPerson(data: Omit<Person, 'id' | 'createdAt' | 'updatedAt'>): Promise<Person> {
-  await checkAuth()
-  
-  const validatedData = personSchema.omit({ id: true, createdAt: true, updatedAt: true }).parse(data)
-  
-  const newPerson = await prisma.person.create({
-    data: validatedData,
-  })
-  
-  revalidatePath('/')
-  return newPerson
+export async function addPerson(data: Omit<Person, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ success: boolean; data?: Person; error?: string }> {
+  try {
+    await checkAuth()
+    
+    const validatedData = personSchema.omit({ id: true, createdAt: true, updatedAt: true }).parse(data)
+    
+    const newPerson = await prisma.person.create({
+      data: validatedData,
+    })
+    
+    revalidatePath('/')
+    return { success: true, data: newPerson }
+  } catch (error) {
+    console.error('Error adding person:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to add person' }
+  }
 }
 
-export async function deletePerson(id: string): Promise<void> {
-  await checkAuth()
-  
-  await prisma.person.delete({
-    where: { id },
-  })
-  
-  console.log(`Person with id ${id} has been deleted.`)
-  revalidatePath('/')
+export async function deletePerson(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    await checkAuth()
+    
+    await prisma.person.delete({
+      where: { id },
+    })
+    
+    console.log(`Person with id ${id} has been deleted.`)
+    revalidatePath('/')
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting person:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete person' }
+  }
 }
 
-export async function updatePerson(id: string, data: Partial<Omit<Person, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Person> {
-  await checkAuth()
-  
-  const updatedPerson = await prisma.person.update({
-    where: { id },
-    data,
-  })
-  
-  console.log(`Person with id ${id} has been updated.`)
-  revalidatePath('/')
-  
-  return updatedPerson
+export async function updatePerson(id: string, data: Partial<Omit<Person, 'id' | 'createdAt' | 'updatedAt'>>): Promise<{ success: boolean; data?: Person; error?: string }> {
+  try {
+    await checkAuth()
+    
+    const updatedPerson = await prisma.person.update({
+      where: { id },
+      data,
+    })
+    
+    console.log(`Person with id ${id} has been updated.`)
+    revalidatePath('/')
+    
+    return { success: true, data: updatedPerson }
+  } catch (error) {
+    console.error('Error updating person:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update person' }
+  }
 }
 
 export const getPersonById = cache(async (id: string) => {
@@ -85,14 +101,19 @@ export const getPersonById = cache(async (id: string) => {
   return person || null
 })
 
-export async function getAllPersons(): Promise<Person[]> {
-  await checkAuth()
-  
-  const persons = await prisma.person.findMany({
-    orderBy: {
-      name: 'asc',
-    },
-  })
-  
-  return persons
+export async function getAllPersons(): Promise<{ success: boolean; data?: Person[]; error?: string }> {
+  try {
+    await checkAuth()
+    
+    const persons = await prisma.person.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+    
+    return { success: true, data: persons }
+  } catch (error) {
+    console.error('Error fetching persons:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to fetch persons' }
+  }
 }
