@@ -19,7 +19,11 @@ export async function GET(request: NextRequest) {
     if (query) {
       persons = await searchPerson(query)
     } else {
-      persons = await getAllPersons()
+      const result = await getAllPersons()
+      if (!result.success || !result.data) {
+        return NextResponse.json({ error: result.error || 'Failed to fetch persons' }, { status: 500 })
+      }
+      persons = result.data
     }
 
     if (persons.length === 0) {
