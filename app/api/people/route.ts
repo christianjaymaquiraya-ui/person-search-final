@@ -1,25 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { User } from '@/app/actions/schemas'
-import { searchUsers } from '@/app/actions/actions'
+import { Person } from '@/app/actions/schemas'
+import { searchPerson, getAllPersons } from '@/app/actions/actions'
+import { auth } from '@/auth'
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const query = searchParams.get('query')
-
-  if (!query) {
-    return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 })
-  }
-
   try {
-    const users: User[] = await searchUsers(query)
-
-    if (users.length === 0) {
-      return NextResponse.json({ message: 'No users found' }, { status: 404 })
+    // Check authentication
+    const session = await auth()
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    return NextResponse.json(users)
+    const searchParams = request.nextUrl.searchParams
+    const query = searchParams.get('query')
+
+    let persons: Person[]
+
+    if (query) {
+      persons = await searchPerson(query)
+    } else {
+      persons = await getAllPersons()
+    }
+
+    if (persons.length === 0) {
+      return NextResponse.json({ message: 'No persons found' }, { status: 404 })
+    }
+
+    return NextResponse.json(persons)
   } catch (error) {
-    console.error('Error searching users:', error)
+    console.error('Error searching persons:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -2,24 +2,26 @@
 
 import { Button } from "@/components/ui/button"
 import { Trash } from 'lucide-react'
-import { deleteUser } from '@/app/actions/actions'
+import { deletePerson } from '@/app/actions/actions'
 import { toast } from "@/hooks/use-toast"
 
 export default function DeleteButton({ userId }: { userId: string }) {
   const handleDelete = async () => {
     try {
-      console.log('DeleteButton: Attempting to delete user with ID', userId)
-      await deleteUser(userId)
+      console.log('DeleteButton: Attempting to delete person with ID', userId)
+      await deletePerson(userId)
       toast({
-        title: "User Deleted",
-        description: `A user with the ID ${userId} has been deleted.`,
+        title: "Person Deleted",
+        description: `Person with ID ${userId} has been deleted successfully.`,
         variant: "default",
       })
+      // Reload the page to reflect changes
+      window.location.href = '/'
     } catch (error) {
-      console.error('DeleteButton: Error deleting user', error)
+      console.error('DeleteButton: Error deleting person', error)
       toast({
         title: "Error",
-        description: "An error occurred while deleting the user.",
+        description: "An error occurred while deleting the person.",
         variant: "destructive",
       })
     }

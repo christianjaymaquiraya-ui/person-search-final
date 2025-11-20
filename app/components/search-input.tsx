@@ -2,21 +2,21 @@
 
 import React, { useCallback } from 'react';
 import AsyncSelect from 'react-select/async';
-import { searchUsers } from '@/app/actions/actions';
+import { searchPerson } from '@/app/actions/actions';
 
 export default function SearchInput() {
     const loadOptions = async (inputValue: string) => {
-        const users = await searchUsers(inputValue);
-        return users.map(user => ({
-            value: user.id,
-            label: user.name,
+        const persons = await searchPerson(inputValue);
+        return persons.map(person => ({
+            value: person.id,
+            label: person.name,
         }));
     };
 
     const handleChange = useCallback((option: { value: string } | null) => {
         const userId = option?.value || null;
 
-        // Update the URL to reflect the selected user ID
+        // Update the URL to reflect the selected person ID
         const url = new URL(window.location.href);
         if (userId) {
             url.searchParams.set('userId', userId);
@@ -34,11 +34,11 @@ export default function SearchInput() {
             className="w-full max-w-md mx-auto"
         >
             <AsyncSelect
-                instanceId="user-search"
+                instanceId="person-search"
                 cacheOptions={false}
                 loadOptions={loadOptions}
                 onChange={handleChange}
-                placeholder="Search for a user..."
+                placeholder="Search for a person..."
             />
         </div>
 

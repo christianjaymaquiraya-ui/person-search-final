@@ -2,14 +2,12 @@
 
 import * as React from "react"
 import { SearchCommand } from "@/components/search-command"
-import { searchUsers } from '@/app/actions/actions'
+import { searchPerson } from '@/app/actions/actions'
 import { User } from "../actions/schemas"
-
-
 
 export default function SearchInput() {
   const handleSearch = React.useCallback(async (value: string) => {
-    return searchUsers(value)
+    return searchPerson(value)
   }, [])
 
   const handleSelect = React.useCallback((user: User) => {
@@ -27,8 +25,8 @@ export default function SearchInput() {
         onItemSelect={handleSelect}
         getItemId={(user) => user.id}
         getItemLabel={(user) => user.name}
-        placeholder="Search users..."
-        noResultsText="No users found."
+        placeholder="Search persons by name..."
+        noResultsText="No persons found."
       />
     </div>
   )

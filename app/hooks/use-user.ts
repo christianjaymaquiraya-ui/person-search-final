@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getUserById } from '@/app/actions/actions'
+import { getPersonById } from '@/app/actions/actions'
 import { User } from '@/app/actions/schemas'
 
 export function useUser(userId: string | null) {
@@ -9,7 +9,7 @@ export function useUser(userId: string | null) {
 
   useEffect(() => {
     if (userId) {
-      getUserById(userId).then(fetchedUser => {
+      getPersonById(userId).then(fetchedUser => {
         if (fetchedUser) {
           setUser(fetchedUser)
         } else {
@@ -23,7 +23,7 @@ export function useUser(userId: string | null) {
 
   const mutate = () => {
     if (userId) {
-      getUserById(userId).then(fetchedUser => {
+      getPersonById(userId).then(fetchedUser => {
         if (fetchedUser) {
           setUser(fetchedUser)
         } else {

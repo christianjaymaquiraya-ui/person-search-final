@@ -1,26 +1,26 @@
 // app/components/user-dialog.tsx
 'use client'
 
-import {  addUser } from '@/app/actions/actions'
+import { addPerson } from '@/app/actions/actions'
 import { userFormSchema, User, UserFormData } from '@/app/actions/schemas'
-
 import { UserForm } from './user-form'
 import MutableDialog, { ActionState }  from '@/components/mutable-dialog'
-
 
 export function UserDialog() {
   const handleAddUser = async (data: UserFormData): Promise<ActionState<User>> => {
     try {
-      const newUser = await addUser(data)
+      const newPerson = await addPerson(data)
+      // Reload page to show new person
+      window.location.href = '/'
       return {
         success: true,
-        message: `User ${newUser.name} added successfully`,
-        data: newUser
+        message: `Person ${newPerson.name} added successfully`,
+        data: newPerson
       }
     } catch (error) {
       return {
         success: false,
-        message: 'Failed to add user ' + (error instanceof Error ? error.message : 'Unknown error')
+        message: 'Failed to add person: ' + (error instanceof Error ? error.message : 'Unknown error')
       }
     }
   }
@@ -30,11 +30,11 @@ export function UserDialog() {
       formSchema={userFormSchema}
       FormComponent={UserForm}
       action={handleAddUser}
-      triggerButtonLabel="Add User"
-      addDialogTitle="Add New User"
-      dialogDescription="Fill out the form below to add a new user."
+      triggerButtonLabel="Add Person"
+      addDialogTitle="Add New Person"
+      dialogDescription="Fill out the form below to add a new person to the database."
       submitButtonLabel="Save"
-      defaultValues={{ name: '', email: '', phoneNumber: '' }} // Default empty values
+      defaultValues={{ name: '', email: '', phoneNumber: '' }}
     />
   )
 }
